@@ -1,12 +1,25 @@
-function clam_av($mailpath)
+function clam_av($fp, $opts = [])
 {
-    $socket = Socket("AF_UNIX", "SOCK_STREAM");
-    $socket->settimeout(30);
-    if (!$socket->connect("/var/run/clamd.sock"))
-        return none;
+    $timeout = $opts["timeout"] ?? 5000;
+    $path = $opts["path"] ?? "/var/run/clamd.sock";
 
-    if (!$socket->send("MULTISCAN $mailpath\n"))
-        return none;
+    $socket = Socket("AF_UNIX", "SOCK_STREAM");
+    $socket->settimeout($timeout / 1000);
+    if (!$socket->connect($path))
+        return;
+
+    $length = $fp->seek(0, "SEEK_END");
+    $fp->seek(0, "SEEK_SET");
+
+    if (!$socket->send("nINSTREAM\n".pack("N", $length)))
+        return;
+
+    while ($str = $fp->read(8192))
+        if (!$socket->send($str))
+            return;
+
+    if (!$socket->send(pack("N", 0)))
+        return;
 
     $response = "";
     while ($resp = $socket->recv(8192))
@@ -28,5 +41,5 @@ function clam_av($mailpath)
             }
         }
     }
-    return none;
+    return;
 }
