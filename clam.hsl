@@ -31,11 +31,11 @@ function clam_av($fp, $opts = [])
         if ($result = pcre_match("^[^:]*: (.*)$", $line))
         {
             if ($result[1] == "OK")
-                return false;
+                return [];
             if ($match = pcre_match("^(.*) ([^ ]+)$", $result[1]))
             {
                 if ($match[2] == "FOUND")
-                    return $match[1];
+                    return [$match[1]];
                 if ($match[2] == "ERROR")
                     echo "Error: ".$match[1];
             }

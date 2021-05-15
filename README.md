@@ -7,7 +7,7 @@ Scan a File pointer (fp) with ClamAV.
 - fp `File` - the mail file
 - options `array` - options array
 
-**Returns**: A `string` if a virus is found (with the virus name), `false` if the message was clean or `none` on error.
+**Returns**: A `array` of viruses found, the array is empty if the message was clean or `none` on error.
 
 The following options are available in the **options** array.
 
