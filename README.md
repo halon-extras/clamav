@@ -13,3 +13,5 @@ The following options are available in the **options** array.
 
 - timeout `number` - Timeout in seconds. The default is 5 seconds.
 - path `string` - Path to a the clamd unix socket. The default is `/var/run/clamd.sock` 
+- host `string` - Host of the clamd server.
+- port `number` - Port of the clamd server.
