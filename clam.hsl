@@ -1,47 +1,48 @@
 function clam_av($fp, $opts = [])
 {
-    $path = $opts["path"] ?? "/var/run/clamd.sock";
-    $host = $opts["host"];
-    $port = $opts["port"] ?? 3310;
-    $timeout = $opts["timeout"] ?? 5;
+	$path = $opts["path"] ?? "/var/run/clamav/clamd.ctl";
+	$address = $opts["address"];
+	$port = $opts["port"];
+	$timeout = $opts["timeout"] ?? 5;
 
-    $socket = Socket($host ? Socket::AF($host) : "AF_UNIX", "SOCK_STREAM");
-    $socket->settimeout($timeout);
-    if (!$socket->connect(...($host ? [$host, $port] : [$path])))
-        return;
+	$socket = Socket($address ? Socket::AF($address) : "AF_UNIX", "SOCK_STREAM");
+	$socket->settimeout($timeout);
+	if (!$socket->connect(...($address ? [$address, $port] : [$path])))
+		return ["error" => "Could not connect"];
 
-    $length = $fp->seek(0, "SEEK_END");
-    $fp->seek(0, "SEEK_SET");
+	$length = $fp->seek(0, "SEEK_END");
+	$fp->seek(0, "SEEK_SET");
 
-    if (!$socket->send("nINSTREAM\n".pack("N", $length)))
-        return;
+	if (!$socket->send("nINSTREAM\n".pack("N", $length)))
+		return ["error" => "Could not send request"];
 
-    while ($str = $fp->read(8192))
-        if (!$socket->send($str))
-            return;
+	while ($str = $fp->read(8192))
+		if (!$socket->send($str))
+			return ["error" => "Could not send content"];
 
-    if (!$socket->send(pack("N", 0)))
-        return;
+	if (!$socket->send(pack("N", 0)))
+	return ["error" => "Could not send content"];
 
-    $response = "";
-    while ($resp = $socket->recv(8192))
-        $response .= $resp;
-    $socket->close();
+	$response = "";
+	while ($resp = $socket->recv(8192))
+		$response .= $resp;
+	$socket->close();
 
-    foreach (explode("\n", $response) as $line)
-    {
-        if ($result = pcre_match("^[^:]*: (.*)$", $line))
-        {
-            if ($result[1] == "OK")
-                return [];
-            if ($match = pcre_match("^(.*) ([^ ]+)$", $result[1]))
-            {
-                if ($match[2] == "FOUND")
-                    return [$match[1]];
-                if ($match[2] == "ERROR")
-                    echo "Error: ".$match[1];
-            }
-        }
-    }
-    return;
+	$result = [];
+	foreach (explode("\n", $response) as $line)
+	{
+		if ($line = pcre_match("^[^:]*: (.*)$", $line))
+		{
+			if ($match = pcre_match("^(.*) ([^ ]+)$", $line[1]))
+			{
+				if ($match[2] == "FOUND")
+					$result["virus"][] = $match[1];
+				if ($match[2] == "ERROR")
+					$result["error"] = $match[1];
+			}
+			if ($result[1] == "OK")
+				return $result;
+		}
+	}
+	return $result;
 }
