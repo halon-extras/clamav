@@ -15,3 +15,11 @@ The following options are available in the **options** array.
 - port `number` - Port of the clamd server.
 
 **Returns**: An associative array, with a `virus` property containing a list of viruses found (array of strings), however note that clamd may currently only return one virus. If an error occures an `error` property (string) is set contaning the error message.
+
+```
+import { clamav } from "extras://clamav";
+
+$clamav = clamav($mail->toFile());
+if ($clamav["virus"])
+  Reject("Virus found");
+```
