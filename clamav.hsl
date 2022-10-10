@@ -1,4 +1,4 @@
-function clam_av($fp, $opts = [])
+function clamav($fp, $opts = [])
 {
 	$path = $opts["path"] ?? "/var/run/clamav/clamd.ctl";
 	$address = $opts["address"];
