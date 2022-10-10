@@ -1,4 +1,4 @@
-## clam_av(fp[, options])
+## clamav(fp[, options])
 
 Scan a File pointer (fp) with ClamAV.
 
