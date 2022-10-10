@@ -1,4 +1,24 @@
-## clamav(fp[, options])
+# ClamAV client
+
+## Installation
+
+Follow the [instructions](https://docs.halon.io/manual/comp_install.html#installation) in our manual to add our package repository and then run the below command.
+
+### Ubuntu
+
+```
+apt-get install halon-extras-clamav
+```
+
+### RHEL
+
+```
+yum install halon-extras-clamav
+```
+
+## Exported functions
+
+### clamav(fp[, options])
 
 Scan a File pointer (fp) with ClamAV.
 
