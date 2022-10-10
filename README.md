@@ -18,6 +18,8 @@ yum install halon-extras-clamav
 
 ## Exported functions
 
+These functions needs to be [imported](https://docs.halon.io/hsl/structures.html#import) from the `extras://clamav` module path.
+
 ### clamav(fp[, options])
 
 Scan a File pointer (fp) with ClamAV.
