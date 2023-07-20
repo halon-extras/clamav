@@ -1,0 +1,5 @@
+import { clamav } from "file://clamav.hsl";
+import $mail from "test.eml";
+
+echo clamav($mail->toFile());
+echo clamav($mail->toFile());

@@ -4,6 +4,7 @@ function clamav($fp, $opts = [])
 	$address = $opts["address"];
 	$port = $opts["port"];
 	$timeout = $opts["timeout"] ?? 5;
+	$rfc822 = $opts["rfc822"] ?? true;
 
 	$socket = Socket($address ? Socket::AF($address) : "AF_UNIX", "SOCK_STREAM");
 	$socket->settimeout($timeout);
@@ -13,8 +14,16 @@ function clamav($fp, $opts = [])
 	$length = $fp->seek(0, "SEEK_END");
 	$fp->seek(0, "SEEK_SET");
 
+	$container = "From halon-extras-clamav\n";
+	if ($rfc822)
+		$length += length($container);
+
 	if (!$socket->send("nINSTREAM\n".pack("N", $length)))
 		return ["error" => "Could not send request"];
+
+	if ($rfc822)
+		if (!$socket->send($container))
+			return ["error" => "send error"];
 
 	while ($str = $fp->read(8192))
 		if (!$socket->send($str))

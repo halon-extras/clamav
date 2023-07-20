@@ -22,7 +22,7 @@ These functions needs to be [imported](https://docs.halon.io/hsl/structures.html
 
 ### clamav(fp[, options])
 
-Scan a File pointer (fp) with ClamAV.
+Scan a File pointer (fp) with ClamAV. If attachements are scanned separately, change the `rfc822` options to false.
 
 **Params**
 
@@ -31,6 +31,7 @@ Scan a File pointer (fp) with ClamAV.
 
 The following options are available in the **options** array.
 
+- rfc822 `boolean` - Scan the content as a "rfc822" message (do not rely on auto-detection). The default is true.
 - timeout `number` - Timeout in seconds. The default is 5 seconds.
 - path `string` - Path to a the clamd unix socket. The default is `/var/run/clamav/clamd.ctl` 
 - address `string` - Host of the clamd server.
